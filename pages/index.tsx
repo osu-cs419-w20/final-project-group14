@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 
 const Home: NextPage<{ userAgent: string }> = ({ userAgent }) => (
   <div>
-    <h1>Hello ZEIT!</h1>
+    <h1>Enhanced Productivity</h1>
     <p>User agent: {userAgent}</p>
   </div>
 );
