@@ -1,3 +1,3 @@
-import authRoutes from './auth/routes'
+import googleRoutes from './google/routes'
 
-export default [...authRoutes]
+export default [...googleRoutes]
