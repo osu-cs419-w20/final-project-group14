@@ -41,9 +41,13 @@ const LogIn = () => {
           if (res.status !== 200) {
             console.log("err")
           } else {
-            dispatch(setJWT(res.json()))
-            history.push("/account")
+            res.json().then(json => {
+              dispatch(setJWT(json['access_token']))
+              history.push("/account")
+            })
           }
+        }).catch(err => {
+          console.log("err")
         })
       }}>
         <div><TextField required label="Username" onChange={e => setUsername(e.target.value)} /></div>

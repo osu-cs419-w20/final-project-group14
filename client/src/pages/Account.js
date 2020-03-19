@@ -41,11 +41,11 @@ const Account = () => {
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json',
-              'Authorization': user.jwt.access_token,
             },
             body: JSON.stringify({
               password: password,
-              newPassword: newPassword
+              newPassword: newPassword,
+              access_token: user.jwt
             })
           }).then( res => {
             if (res.status !== 200) {

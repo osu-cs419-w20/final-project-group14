@@ -12,6 +12,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = os.getenv('SECRET')
+app.config['JWT_TOKEN_LOCATION'] = ['json']
 jwt = JWTManager(app)
 client = MongoClient()
 db = client.TIME_BLOCKER_DEV
@@ -75,7 +76,7 @@ def auth():
     access_token = create_access_token(identity=username)
     return jsonify(access_token=access_token), 200
     
-@app.route('/api/v1/changePass', methods=['GET'])
+@app.route('/api/v1/changePass', methods=['POST'])
 @jwt_required
 def change_pass():
     if not request.is_json:
@@ -87,9 +88,9 @@ def change_pass():
 
     users = db.users
 
-    res = user.find_one({"username": current_user})
+    res = users.find_one({"username": current_user})
 
-    if res == None || password != res['password']:
+    if res == None or password != res['password']:
         return jsonify({"msg": "Bad username or password"}), 401
     
     res = users.update_one({"username": current_user}, {"$set": {"password": newPassword}})
