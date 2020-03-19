@@ -15,9 +15,9 @@ const initialStateUser = {
 }
 
 const initialStateTodo = {
-  currentTask: -1,
+  currentTask: {},
   nextTask: -1,
-  nextBreakDur: -1
+  nextBreakDur: 15
 }
 
 function userReducer(state = initialStateUser, action) {

@@ -100,12 +100,42 @@ def change_pass():
     
     return jsonify({"msg": "OK"}), 200
 
+@app.route('/api/v1/updateTask', methods=['POST'])
+@jwt_required
+def update_task():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
 
-@app.route('/api/v1/tasks', methods=['GET'])
+    current_user = get_jwt_identity()
+
+    tasks = db.tasks
+
+    res = tasks.find_one({"id": request.json.get('id', None)})
+
+    if res == None:
+        return jsonify({"msg": "No id of that"}), 400
+    
+    res = tasks.update_one({"id": request.json.get('id', None)}, {"$set": {"complete": request.json.get('complete', None)}})
+
+    return jsonify({"msg": "OK"}), 200
+
+@app.route('/api/v1/tasks', methods=['POST'])
 @jwt_required
 def all_tasks():
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user)
+    user = get_jwt_identity()
+    tasks = db.tasks
+    
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    res = []
+
+    for x in tasks.find({},{ "_id": 0}):
+        print(x)
+        if x['userId'] == user:
+            res.append(x)
+    
+    return jsonify(res)
 
 @app.route('/api/v1/createTask', methods=['POST'])
 @jwt_required
@@ -136,13 +166,15 @@ def createTask():
 @app.route('/api/v1/deleteTask', methods=['POST'])
 @jwt_required
 def deleteTask():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
     user = get_jwt_identity()
 
     tasks = db.tasks
 
-    req_data = request.get_json()
-
-    tasks.delete_one({'id': req_data['id'], 'userId': user})
+    res = tasks.delete_one({'id': request.json.get('id', None), 'userId': user})
+    return jsonify({"msg": "OK"}), 200
 
 @app.route('/api/v1/task', methods=['POST'])
 @jwt_required
