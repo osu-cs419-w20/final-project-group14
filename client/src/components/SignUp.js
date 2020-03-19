@@ -62,10 +62,10 @@ function SignUp() {
         }
        }
       }>
-        <TextField required id="test" label="Username" onChange={e => setUsername(e.target.value)} />
-        <TextField required type="password" id="pass" label="Password" onChange={e => setPassword(e.target.value)}/>
-        <TextField required type="password" id="confirm_pass" label="Confirm Password" onChange={e => setConfirmPassword(e.target.value)}/>
-        <Button type="submit" variant="contained" color="primary">Go!</Button>
+        <div><TextField required id="test" label="Username" onChange={e => setUsername(e.target.value)} /></div>
+        <div><TextField required type="password" id="pass" label="Password" onChange={e => setPassword(e.target.value)}/></div>
+        <div><TextField required type="password" id="confirm_pass" label="Confirm Password" onChange={e => setConfirmPassword(e.target.value)}/></div>
+        <div><Button type="submit" variant="contained" color="primary" css={css`margin:25px;`}>Go!</Button></div>
       </form>
       <br />
       <NavLink to="/login" css={css`text-decoration: none; color: #2b7bbe;`}>Log In</NavLink>

@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { css, jsx } from '@emotion/core'
 import React from 'react'
 
 import Grid from '@material-ui/core/Grid'
@@ -16,12 +18,12 @@ const Landing = () => {
     return (
       <Grid
         container
-        direction="row"
-        justify="space-evenly"
-        alignItems="stretch"
+        direction="column"
+        justify="center"
+        alignItems="center"
       >
         <div><SignUp /></div>
-        <div><About /></div>
+        <div css={css`margin: 20px;`}><About /></div>
       </Grid>
     )
   }
