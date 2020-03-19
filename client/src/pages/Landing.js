@@ -31,8 +31,15 @@ const Landing = () => {
   return (
     <Grid
       container
+      direction="column"
+      justify="center"
+      alignItems="center"
     >
-      <h1>Logged In</h1>
+      <h1>08:23am</h1>
+      <p>Current task: </p>
+      <p>Next task: </p>
+      <p>13:11 until next break</p>
+      <p>15min break next!</p>
     </Grid>
   )  
   

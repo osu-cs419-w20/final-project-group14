@@ -112,21 +112,26 @@ def all_tasks():
 def createTask():
     user = get_jwt_identity()
     tasks = db.tasks
+    
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
 
-    req_data = request.get_json()
 
-    # Check for id dups
+    res = tasks.find_one({'id': user+request.json.get('title', None)})
 
-    task = {
-        'id': req_data['id'],
-        'title': req_data['title'],
-        'due': req_data['due'],
-        'description': req_data['description'],
-        'complete': req_data['complete'],
-        'userId': user
-    }
+    if res != None:
+        return jsonify({"msg": "Already have a task named that"}), 401
 
-    tasks.insert_one(task)
+    res = tasks.insert_one({
+        "id": user+request.json.get('title', None),
+        "title": request.json.get('title', None),
+        "due": request.json.get('due', None),
+        "description": request.json.get('description', None),
+        "complete": request.json.get('complete', None),
+        "userId": user
+    })
+
+    return jsonify({"id": user+request.json.get('title', None)})
 
 @app.route('/api/v1/deleteTask', methods=['POST'])
 @jwt_required
@@ -139,24 +144,23 @@ def deleteTask():
 
     tasks.delete_one({'id': req_data['id'], 'userId': user})
 
-@app.route('/api/v1/task', methods=['GET'])
+@app.route('/api/v1/task', methods=['POST'])
 @jwt_required
 def task():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+    
     user = get_jwt_identity()
-
-    # Change to req body stuff
-    if 'id' in request.args:
-        id = int(request.args['id'])
-    else:
-        return 'Error: No id field provided. Please specify an id.'
     
     tasks = db.tasks
 
-    res = tasks.find_one({'id': id, 'userId': user})
-    if res is not None:
-        task = {'id': int(res['id']), 'title': res['title']}
-        return jsonify(task)
-    else:
-        return 'Error, no such task'
+
+
+    res = tasks.find_one({'id': request.json.get('id', None), 'userId': user})
+
+    if res == None:
+       return jsonify({"msg": "No Id found"}), 400
+
+    return jsonify({"id": res['id'], "title": res['title'], "due": res['due'], "description": res['description'], "complete": res['complete']})
 
 app.run()

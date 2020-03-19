@@ -41,7 +41,6 @@ const TopNav = () => {
           <Typography variant="h4" className={classes.title}>
             <NavLink to="/" css={css`text-decoration: none; color: white;`}>TimeBlocker</NavLink>
           </Typography>
-          <NavLink to="/calendar" css={css`text-decoration: none; color: white; padding: 10px;`}>Calendar</NavLink>
           <NavLink to="/tasks" css={css`text-decoration: none; color: white; padding: 10px;`}>Tasks</NavLink>
           <NavLink to="/account" css={css`text-decoration: none; color: white; padding: 10px;`}>Account</NavLink>
           <NavLink to="/login" css={css`text-decoration: none; color: white; padding: 10px;`}>Log In</NavLink>

@@ -51,7 +51,7 @@ const Account = () => {
             if (res.status !== 200) {
               console.log("err")
             } else {
-              dispatch(setJWT(res.json))
+              res.json().then( json => { dispatch(setJWT(json['access_token']))})
               history.push("/login")
             }
           })
@@ -61,9 +61,6 @@ const Account = () => {
         <div><TextField required type="password" label="New Password" onChange={e => setNewPassword(e.target.value)}/></div>
         <div><TextField required type="password" label="Confirm Password" onChange={e => setConfirmPassword(e.target.value)}/></div>
         <div><Button type="submit" variant="contained" color="primary" css={css`margin:25px;`}>Change Password</Button></div>
-      </form>
-      <form>
-        <Button type="submit" color="secondary" css={css`margin:25px;`}>Delete Account</Button>
       </form>
     </Grid>
   )
