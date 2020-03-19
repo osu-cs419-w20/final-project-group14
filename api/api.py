@@ -1,9 +1,14 @@
-import flask
-from flask import request, jsonify
+from flask import request, jsonify, Flask
 from pymongo import MongoClient
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
 import urllib.parse
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
+app.config['JWT_SECRET_KEY'] = 'secret' #### CHANGE THIS JOHN ####
+jwt = JWTManager(app)
 client = MongoClient()
 db = client.TIME_BLOCKER_DEV
 
@@ -14,17 +19,40 @@ def home():
 
 @app.route('/api/v1/auth', methods=['POST'])
 def auth():
-    req = request.get_json()
-    flow.fetch_token(code=req['code'])
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+
+    if not username:
+        return jsonify({"msg": "Missing username parameter"}), 400
+    if not password:
+        return jsonify({"msg": "Missing password parameter"}), 400
+    
+    # Here query for the user document for the username. If it does not exist,
+    # then return err. Also get the password and unhash.
+
+    if username != 'test' or password != 'test':
+        return jsonify({"msg": "Bad username or password"}), 401
+    
+    # Look up the userID of the username
+    userId = 0
+
+    access_token = create_access_token(identity=userId)
+    return jsonify(access_token=access_token), 200
     
 
 @app.route('/api/v1/tasks', methods=['GET'])
+@jwt_required
 def all_tasks():
-    return jsonify(tasks)
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user)
 
 @app.route('/api/v1/createTask', methods=['POST'])
-def createTaks():
-    #Check auth
+@jwt_required
+def createTask():
+    user = get_jwt_identity()
     tasks = db.tasks
 
     req_data = request.get_json()
@@ -36,14 +64,29 @@ def createTaks():
         'title': req_data['title'],
         'due': req_data['due'],
         'description': req_data['description'],
-        'complete': req_data['complete']
+        'complete': req_data['complete'],
+        'userId': user
     }
 
     tasks.insert_one(task)
 
+@app.route('/api/v1/deleteTask', methods=['POST'])
+@jwt_required
+def deleteTask():
+    user = get_jwt_identity()
+
+    tasks = db.tasks
+
+    req_data = request.get_json()
+
+    tasks.delete_one({'id': req_data['id'], 'userId': user})
+
 @app.route('/api/v1/task', methods=['GET'])
+@jwt_required
 def task():
-    # Check auth
+    user = get_jwt_identity()
+
+    # Change to req body stuff
     if 'id' in request.args:
         id = int(request.args['id'])
     else:
@@ -51,7 +94,7 @@ def task():
     
     tasks = db.tasks
 
-    res = tasks.find_one({'id': id})
+    res = tasks.find_one({'id': id, 'userId': user})
     if res is not None:
         task = {'id': int(res['id']), 'title': res['title']}
         return jsonify(task)
