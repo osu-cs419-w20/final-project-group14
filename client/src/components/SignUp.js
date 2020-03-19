@@ -52,9 +52,10 @@ function SignUp() {
             if (res.status !== 200) {
               console.log("err")
             } else {
-              dispatch(setJWT(res.json))
-              history.push("/account")
-            }
+              res.json().then( json => {
+                dispatch(setJWT(json['access_token']))
+                history.push("/account")
+            })}
           })
         }
        }
