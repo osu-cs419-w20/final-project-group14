@@ -51,13 +51,10 @@ function SignUp() {
           }).then((res) => {
             if (res.status !== 200) {
               console.log("err")
+            } else {
+              dispatch(setJWT(res.json))
+              history.push("/account")
             }
-            return res.json()
-          }).then( (json) => {
-            dispatch(setJWT(json))
-            console.log(json)
-          }).then( () => {
-            history.push("/account")
           })
         }
        }
