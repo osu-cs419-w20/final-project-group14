@@ -4,6 +4,11 @@ import { BrowserRouter as Router, Switch, Route, NavLink } from 'react-router-do
 
 import TopNav from './components/TopNav'
 import Landing from './pages/Landing'
+import Calendar from './pages/Calendar'
+import Tasks from './pages/Tasks'
+import Account from './pages/Account'
+import Task from './pages/Task'
+import LogIn from './pages/LogIn'
 
 function App() {
   return (
@@ -11,6 +16,21 @@ function App() {
       <div>
         <TopNav />
         <Switch>
+         <Route path="/task/:id">
+            <Task />
+          </Route>
+          <Route path="/login">
+            <LogIn />
+          </Route>
+          <Route path="/account">
+            <Account />
+          </Route>
+          <Route path="/tasks">
+            <Tasks />
+          </Route>
+          <Route path="/calendar">
+            <Calendar />
+          </Route>
           <Route exact path="/">
             <Landing />
           </Route>
