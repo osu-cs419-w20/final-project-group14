@@ -5,7 +5,7 @@ import { TextField, Button } from '@material-ui/core'
 import { useState } from 'react'
 import { setJWT } from '../redux/actions'
 import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router'
+import { NavLink, useHistory } from 'react-router-dom'
 
 const LogIn = () => {
   const [username, setUsername] = useState("")
@@ -51,6 +51,8 @@ const LogIn = () => {
         <div><TextField required type="password" label="Password" onChange={e => setPassword(e.target.value)}/></div>
         <div><Button type="submit" color="primary">Log In</Button></div>
       </form>
+      
+      <p>No Account? <NavLink to="/" css={css`text-decoration: none; color: #2b7bbe;`}>Sign Up!</NavLink></p>
     </Grid>
   )
 }
