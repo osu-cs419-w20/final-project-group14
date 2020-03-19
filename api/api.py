@@ -1,39 +1,61 @@
 import flask
 from flask import request, jsonify
-
-tasks = [
-        {'id': 0,
-         'title': 'Make the site',
-        },
-        {'id': 1,
-         'title': 'Sleep'
-        }
-]
+from pymongo import MongoClient
+import urllib.parse
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+client = MongoClient()
+db = client.TIME_BLOCKER_DEV
 
 @app.route('/', methods=['GET'])
 def home():
-    return "API / Route"
+    return 'API / Route'
+
+
+@app.route('/api/v1/auth', methods=['POST'])
+def auth():
+    req = request.get_json()
+    flow.fetch_token(code=req['code'])
+    
 
 @app.route('/api/v1/tasks', methods=['GET'])
 def all_tasks():
     return jsonify(tasks)
 
+@app.route('/api/v1/createTask', methods=['POST'])
+def createTaks():
+    #Check auth
+    tasks = db.tasks
+
+    req_data = request.get_json()
+
+    # Check for id dups
+
+    task = {
+        'id': req_data['id'],
+        'title': req_data['title'],
+        'due': req_data['due'],
+        'description': req_data['description'],
+        'complete': req_data['complete']
+    }
+
+    tasks.insert_one(task)
+
 @app.route('/api/v1/task', methods=['GET'])
 def task():
+    # Check auth
     if 'id' in request.args:
         id = int(request.args['id'])
     else:
-        return "Error: No id field provided. Please specify an id."
+        return 'Error: No id field provided. Please specify an id.'
     
-    res = []
+    tasks = db.tasks
 
-    for task in tasks:
-        if task['id'] == id:
-            res.append(task)
-
-    return jsonify(res)
+    res = tasks.find_one({'id': id})
+    if res is not None:
+        task = {'id': int(res['id']), 'title': res['title']}
+        return jsonify(task)
+    else:
+        return 'Error, no such task'
 
 app.run()
