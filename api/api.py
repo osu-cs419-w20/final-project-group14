@@ -4,10 +4,14 @@ from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     get_jwt_identity
 )
+from dotenv import load_dotenv
 import urllib.parse
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
-app.config['JWT_SECRET_KEY'] = 'secret' #### CHANGE THIS JOHN ####
+app.config['JWT_SECRET_KEY'] = os.getenv('SECRET') #### CHANGE THIS JOHN ####
 jwt = JWTManager(app)
 client = MongoClient()
 db = client.TIME_BLOCKER_DEV
