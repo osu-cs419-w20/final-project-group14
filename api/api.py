@@ -38,7 +38,7 @@ def create_user():
 
     res = users.find_one({"username": username})
 
-    if res not None:
+    if res != None:
         return jsonify({"msg": "Bad username"}), 400
     
     # Bad security

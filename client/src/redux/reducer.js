@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 
 import {
-  SET_USER_ID,
+  SET_USER_NAME,
   SET_JWT,
   SET_CURRENT_TASK,
   SET_NEXT_TASK,
@@ -10,14 +10,14 @@ import {
 } from './actions'
 
 const initialStateUser = {
-  userId: null,
+  username: "",
   jwt: ""
 }
 
 const initialStateTodo = {
-  currentTask: null,
-  nextTask: null,
-  nextBreakDur: null
+  currentTask: -1,
+  nextTask: -1,
+  nextBreakDur: -1
 }
 
 function userReducer(state = initialStateUser, action) {
@@ -27,10 +27,10 @@ function userReducer(state = initialStateUser, action) {
         ...state,
         jwt: action.jwt
       }
-    case SET_USER_ID:
+    case SET_USER_NAME:
       return {
         ...state,
-        userId: action.id
+        username: action.name
       }
     default:
       return state
