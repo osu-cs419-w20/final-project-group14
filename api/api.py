@@ -11,7 +11,7 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
-app.config['JWT_SECRET_KEY'] = os.getenv('SECRET') #### CHANGE THIS JOHN ####
+app.config['JWT_SECRET_KEY'] = os.getenv('SECRET')
 jwt = JWTManager(app)
 client = MongoClient()
 db = client.TIME_BLOCKER_DEV
@@ -20,6 +20,32 @@ db = client.TIME_BLOCKER_DEV
 def home():
     return 'API / Route'
 
+@app.route('/api/v1/createUser', methods=['POST'])
+def create_user():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+
+    if not username:
+        return jsonify({"msg": "Missing username parameter"}), 400
+    if not password:
+        return jsonify({"msg": "Missing password parameter"}), 400
+    
+
+    users = db.users
+
+    res = users.find_one({"username": username})
+
+    if res not None:
+        return jsonify({"msg": "Bad username"}), 400
+    
+    # Bad security
+    res = users.insert_one({"username": username, "password": password})
+
+    access_token = create_access_token(identity=username)
+    return jsonify(access_token=access_token), 200
 
 @app.route('/api/v1/auth', methods=['POST'])
 def auth():
@@ -36,14 +62,16 @@ def auth():
     
     # Here query for the user document for the username. If it does not exist,
     # then return err. Also get the password and unhash.
+    users = db.users
 
-    if username != 'test' or password != 'test':
+    res = users.find_one({"username": username})
+    if res == None:
         return jsonify({"msg": "Bad username or password"}), 401
-    
-    # Look up the userID of the username
-    userId = 0
 
-    access_token = create_access_token(identity=userId)
+    if username != res['username'] or password != res['password']:
+        return jsonify({"msg": "Bad username or password"}), 401
+
+    access_token = create_access_token(identity=username)
     return jsonify(access_token=access_token), 200
     
 
